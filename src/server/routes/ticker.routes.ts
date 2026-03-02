@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from "express"
-import type { Ticker } from "@shared/types/market.js"
+import type { Ticker } from "@shared/types/market.types.js"
 
 const router = Router()
 
