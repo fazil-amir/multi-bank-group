@@ -1,3 +1,3 @@
 export const ENDPOINTS = {
-  TICKERS: "/api/tickers",
+  TRACKER: "/api/tracker",
 } as const;
