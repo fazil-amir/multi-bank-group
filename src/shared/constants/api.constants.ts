@@ -1,4 +1,5 @@
 export const ENDPOINTS = {
   TRACKERS: "/api/trackers",
-  TRACKER: "/api/tracker",
+  TRACKERS_SYMBOLS: "/api/trackers/symbols",
+  TRACKERS_STREAMS: "/api/trackers/streams",
 } as const;

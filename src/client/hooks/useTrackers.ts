@@ -9,7 +9,7 @@ export function useTrackers(): { trackers: TrackerInfo[]; loading: boolean; erro
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiFetch<TrackerInfo[]>(ENDPOINTS.TRACKERS)
+    apiFetch<TrackerInfo[]>(ENDPOINTS.TRACKERS_SYMBOLS)
       .then(setTrackers)
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false));

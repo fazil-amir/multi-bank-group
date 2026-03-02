@@ -36,7 +36,7 @@ export function useLivePrices(): { priceMap: PriceMap; error: string | null } {
   const dirtyRef = useRef(false);
 
   useEffect(() => {
-    const es = new EventSource(`${API_BASE_URL}${ENDPOINTS.TRACKER}`);
+    const es = new EventSource(`${API_BASE_URL}${ENDPOINTS.TRACKERS_STREAMS}`);
 
     es.onmessage = (event: MessageEvent<string>) => {
       const incoming = JSON.parse(event.data) as LivePrice[];

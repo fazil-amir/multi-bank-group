@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getTrackers } from "../controllers/trackers.controller";
+import { getTrackersSymbols, getTrackersStreams } from "../controllers/trackers.controller";
 
 const router = Router();
 
-router.get("/", getTrackers);
+router.get("/symbols", getTrackersSymbols);
+router.get("/streams", getTrackersStreams);
 
 export default router;
