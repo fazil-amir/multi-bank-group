@@ -1,6 +1,6 @@
-import { useMemo, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { LivePrice, PriceWithTrend, Trend } from "@shared/types/market.types";
-import { Table, type ColumnDef } from "../table";
+import { Table, type ColumnDef } from "../../ui/table";
 import type { PriceMap } from "../../hooks/useLivePrices";
 
 const TREND_COLORS: Record<Trend, string | undefined> = {
@@ -36,7 +36,18 @@ const columns: ColumnDef<PriceWithTrend>[] = [
     title: "Symbol",
     dataIndex: "symbol",
     align: "left",
-    cellStyle: () => ({ fontWeight: 600 }),
+    render: (_v, record): ReactNode => (
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 600 }}>
+        {record.icon && (
+          <img
+            src={record.icon}
+            alt={record.symbol}
+            style={{ width: 22, height: 22, borderRadius: "50%" }}
+          />
+        )}
+        {record.name}
+      </span>
+    ),
   },
   {
     key: "price",
@@ -82,19 +93,32 @@ const columns: ColumnDef<PriceWithTrend>[] = [
   },
 ];
 
-interface TrackerProps {
+const INITIAL_COUNT = 8;
+
+interface TrackerTableProps {
   priceMap: PriceMap;
 }
 
-export function Tracker({ priceMap }: TrackerProps) {
+export function TrackerTable({ priceMap }: TrackerTableProps) {
+  const [expanded, setExpanded] = useState(false);
   const data = useMemo(() => Object.values(priceMap), [priceMap]);
 
+  const visible = expanded ? data : data.slice(0, INITIAL_COUNT);
+  const hasMore = data.length > INITIAL_COUNT;
+
   return (
-    <Table<PriceWithTrend>
-      columns={columns}
-      data={data}
-      rowKey="symbol"
-      emptyText="Waiting for data..."
-    />
+    <div>
+      <Table<PriceWithTrend>
+        columns={columns}
+        data={visible}
+        rowKey="symbol"
+        emptyText="Waiting for data..."
+      />
+      {hasMore && (
+        <button className="show-toggle" onClick={() => setExpanded((prev) => !prev)}>
+          {expanded ? "Show Less" : "Show More"}
+        </button>
+      )}
+    </div>
   );
 }

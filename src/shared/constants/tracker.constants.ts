@@ -1,25 +1,6 @@
-export const TRACKER_SYMBOLS = [
-  "btcusdt",
-  "ethusdt",
-  "solusdt",
-  "bnbusdt",
-  "adausdt",
-  "xrpusdt",
-  "dogeusdt",
-  "maticusdt",
-  "dotusdt",
-  "ltcusdt",
-  "avaxusdt",
-  "linkusdt",
-  "atomusdt",
-  "trxusdt",
-  "uniusdt",
-  "xlmusdt",
-  "etcusdt",
-  "filusdt",
-  "nearusdt",
-  "aptusdt",
-] as const;
+import { TRACKERS } from "./tracker-symbols.constants";
+
+export const TRACKER_SYMBOLS = TRACKERS.map((t) => t.id);
 
 const streamQuery = TRACKER_SYMBOLS.map((s) => `${s}@trade`).join("/");
 

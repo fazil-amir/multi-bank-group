@@ -3,10 +3,23 @@ export interface Ticker {
   price: number;
 }
 
+export interface TrackerInfo {
+  id: string;
+  symbol: string;
+  name: string;
+  description: string;
+  pair: string;
+  icon: string;
+}
+
 export interface LivePrice {
   symbol: string;
+  name: string;
+  icon: string;
   price: number;
   prevPrice: number;
+  openPrice: number;
+  changePercent: number;
   high: number;
   low: number;
   volume: number;
