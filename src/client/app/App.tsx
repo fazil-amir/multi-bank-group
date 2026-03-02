@@ -16,7 +16,7 @@ export default function App() {
 
   return (
     <main>
-      <h1>Tickers 123</h1>
+      <h1>Welcome Dashboard</h1>
       <ul>
         {tickers.map((t) => (
           <li key={t.symbol}>
