@@ -12,6 +12,8 @@ app.use(express.json());
 
 app.use(ENDPOINTS.TRACKER, trackerRoutes);
 
+// Start a single persistent WebSocket to Binance at boot,
+// so the in-memory price map is already populated before any client connects.
 connectTracker();
 
 app.listen(API_PORT, () => {

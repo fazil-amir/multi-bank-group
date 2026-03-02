@@ -2,6 +2,13 @@ import WebSocket from "ws";
 import { TRACKER_WS_URL } from "@shared/constants/tracker.constants";
 import type { TrackerMessage, LivePrice } from "@shared/types/market.types";
 
+// Single-process in-memory store. For horizontal scaling, extract WS ingestion
+// into a worker and use Redis (HSET/Pub-Sub) as the shared price cache.
+
+// IMPROVEMENT: Switch to lazy connection — track client count via addClient/removeClient,
+// connect to Binance on first SSE client, disconnect when last one leaves.
+// Add a 30s grace period before closing to avoid flapping on rapid reconnects.
+
 const prices = new Map<string, LivePrice>();
 
 let ws: WebSocket | null = null;
@@ -19,8 +26,9 @@ export function connectTracker(): void {
 
     const price = parseFloat(trade.p);
     const quantity = parseFloat(trade.q);
-    const existing = prices.get(trade.s);
+    const existing = prices.get(trade.s); 
 
+    // Derived fields are computed on write so reads are O(1) with zero allocation.
     const prevPrice = existing?.price ?? price;
     const high = existing ? Math.max(existing.high, price) : price;
     const low = existing ? Math.min(existing.low, price) : price;
