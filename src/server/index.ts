@@ -1,7 +1,7 @@
 import express from "express"
 import cors from "cors"
-import { API_PORT, ENDPOINTS } from "@shared/constants/api.constants.js"
-import tickerRoutes from "./routes/ticker.routes.js"
+import { API_PORT, ENDPOINTS } from "@shared/constants/api.constants"
+import tickerRoutes from "./routes/ticker.routes"
 
 const app = express()
 

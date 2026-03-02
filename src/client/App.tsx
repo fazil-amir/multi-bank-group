@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import type { Ticker } from "@shared/types/market.types.js"
-import { fetchTickers } from "@shared/api/tickers.api.js"
+import type { Ticker } from "@shared/types/market.types"
+import { fetchTickers } from "@shared/api/tickers.api"
 
 export default function App() {
   const [tickers, setTickers] = useState<Ticker[]>([])
@@ -14,7 +14,7 @@ export default function App() {
 
   return (
     <main>
-      <h1>Tickers</h1>
+      <h1>Tickers 123</h1>
       <ul>
         {tickers.map((t) => (
           <li key={t.symbol}>
