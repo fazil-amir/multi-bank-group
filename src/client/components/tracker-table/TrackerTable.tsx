@@ -2,6 +2,7 @@ import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { LivePrice, PriceWithTrend, Trend } from "@shared/types/market.types";
 import { Table, type ColumnDef } from "../../ui/table";
 import type { PriceMap } from "@shared/types/market.types";
+import { TableShimmer } from "./TableShimmer";
 
 const TREND_COLORS: Record<Trend, string | undefined> = {
   up: "#00c853",
@@ -105,16 +106,21 @@ export function TrackerTable({ priceMap }: TrackerTableProps) {
 
   const visible = expanded ? data : data.slice(0, INITIAL_COUNT);
   const hasMore = data.length > INITIAL_COUNT;
+  const pricesLoading = data.length === 0;
 
   return (
     <div>
-      <Table<PriceWithTrend>
-        columns={columns}
-        data={visible}
-        rowKey="symbol"
-        emptyText="Waiting for data..."
-      />
-      {hasMore && (
+      {pricesLoading ? (
+        <TableShimmer />
+      ) : (
+        <Table<PriceWithTrend>
+          columns={columns}
+          data={visible}
+          rowKey="symbol"
+          emptyText="Waiting for data..."
+        />
+      )}
+      {hasMore && !pricesLoading && (
         <button
           className="block mt-6 mb-10 py-3.5 px-8 bg-surface border-2 border-accent text-accent rounded-xl text-sm font-semibold cursor-pointer hover:bg-accent hover:text-white transition-colors"
           onClick={() => setExpanded((prev) => !prev)}
