@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@shared/constants/api.constants"
+import { API_BASE_URL } from "@shared/constants/app.constants"
 
 export async function apiFetch<T>(endpoint: string): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${endpoint}`)
