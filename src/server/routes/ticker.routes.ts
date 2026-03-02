@@ -1,17 +1,17 @@
-import { Router, type Request, type Response } from "express"
-import type { Ticker } from "@shared/types/market.types"
+import { Router, type Request, type Response } from "express";
+import type { Ticker } from "@shared/types/market.types";
 
-const router = Router()
+const router = Router();
 
 const tickers: Ticker[] = [
   { symbol: "AAPL", price: 150 },
   { symbol: "TSLA", price: 250 },
   { symbol: "BTC-USD", price: 60000 },
   { symbol: "ETH-USD", price: 2000 },
-]
+];
 
 router.get("/", (_req: Request, res: Response<Ticker[]>) => {
-  res.json(tickers)
-})
+  res.json(tickers);
+});
 
-export default router
+export default router;

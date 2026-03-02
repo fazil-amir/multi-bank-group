@@ -1,4 +1,4 @@
 export interface Ticker {
-  symbol: string
-  price: number
+  symbol: string;
+  price: number;
 }

@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react"
-import type { Ticker } from "@shared/types/market.types"
-import { fetchTickers } from "@shared/api/tickers.api"
+import { useEffect, useState } from "react";
+import type { Ticker } from "@shared/types/market.types";
+import { fetchTickers } from "@shared/api/tickers.api";
 
 export default function App() {
-  const [tickers, setTickers] = useState<Ticker[]>([])
-  const [error, setError] = useState<string | null>(null)
+  const [tickers, setTickers] = useState<Ticker[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchTickers().then(setTickers).catch((err: Error) => setError(err.message))
-  }, [])
+    fetchTickers()
+      .then(setTickers)
+      .catch((err: Error) => setError(err.message));
+  }, []);
 
-  if (error) return <p>Error: {error}</p>
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <main>
@@ -23,5 +25,5 @@ export default function App() {
         ))}
       </ul>
     </main>
-  )
+  );
 }
