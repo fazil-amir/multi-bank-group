@@ -48,3 +48,5 @@ export type TrendMap = Partial<Record<keyof LivePrice, Trend>>;
 export interface PriceWithTrend extends LivePrice {
   trends: TrendMap;
 }
+
+export type PriceMap = Record<string, PriceWithTrend>;

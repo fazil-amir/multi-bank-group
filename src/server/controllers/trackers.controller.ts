@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { TRACKERS } from "@shared/constants/tracker-symbols.constants";
+import { TRACKERS } from "@shared/constants/trackerSymbols.constants";
 import { SSE_INTERVAL_MS } from "@shared/constants/tracker.constants";
 import { getLivePrices } from "../services/tracker.service";
 

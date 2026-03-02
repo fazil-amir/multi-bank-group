@@ -1,6 +1,5 @@
 import { useState } from "react";
-import type { TrackerInfo } from "@shared/types/market.types";
-import type { PriceMap } from "../../hooks/useLivePrices";
+import type { PriceMap, TrackerInfo } from "@shared/types/market.types";
 import { TrackerCard } from "../tracker-card";
 
 const INITIAL_COUNT = 8;

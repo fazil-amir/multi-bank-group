@@ -1,14 +1,14 @@
 import { APP_NAME } from "@shared/constants/app.constants";
-import { useLivePrices } from "../hooks/useLivePrices";
-import { useTrackers } from "../hooks/useTrackers";
 import { TrackerGrid } from "../components/tracker-grid";
 import { TrackerTable } from "../components/tracker-table";
+import { useLivePrices } from "../hooks/useLivePrices";
+import { useTrackers } from "../hooks/useTrackers";
 
 export default function App() {
   const { trackers, loading, error: trackersError } = useTrackers();
-  const { priceMap, error: streamError } = useLivePrices();
+  const { priceMap, error: pricesError } = useLivePrices();
 
-  const error = trackersError ?? streamError;
+  const error = trackersError ?? pricesError;
 
   return (
     <main className="max-w-[1400px] mx-auto px-10 py-10">

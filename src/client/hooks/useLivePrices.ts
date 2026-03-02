@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { API_BASE_URL } from "@shared/constants/app.constants";
 import { ENDPOINTS } from "@shared/constants/api.constants";
-import type { LivePrice, PriceWithTrend, Trend, TrendMap } from "@shared/types/market.types";
-
-export type PriceMap = Record<string, PriceWithTrend>;
+import type {
+  LivePrice,
+  PriceMap,
+  PriceWithTrend,
+  Trend,
+  TrendMap,
+} from "@shared/types/market.types";
 
 const NUMERIC_KEYS: (keyof LivePrice)[] = [
   "price",

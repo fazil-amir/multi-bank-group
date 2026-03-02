@@ -1,7 +1,7 @@
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { LivePrice, PriceWithTrend, Trend } from "@shared/types/market.types";
 import { Table, type ColumnDef } from "../../ui/table";
-import type { PriceMap } from "../../hooks/useLivePrices";
+import type { PriceMap } from "@shared/types/market.types";
 
 const TREND_COLORS: Record<Trend, string | undefined> = {
   up: "#00c853",

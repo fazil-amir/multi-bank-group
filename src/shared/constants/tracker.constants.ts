@@ -1,4 +1,4 @@
-import { TRACKERS } from "./tracker-symbols.constants";
+import { TRACKERS } from "./trackerSymbols.constants";
 
 export const TRACKER_SYMBOLS = TRACKERS.map((t) => t.id);
 

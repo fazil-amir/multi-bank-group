@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import { TRACKER_WS_URL } from "@shared/constants/tracker.constants";
-import { TRACKERS } from "@shared/constants/tracker-symbols.constants";
+import { TRACKERS } from "@shared/constants/trackerSymbols.constants";
 import type { TrackerMessage, LivePrice } from "@shared/types/market.types";
 
 const trackerById = new Map(TRACKERS.map((t) => [t.id.toUpperCase(), t]));
