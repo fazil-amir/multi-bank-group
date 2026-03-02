@@ -28,21 +28,16 @@ export function connectTracker(): void {
     const low = existing ? Math.min(existing.low, price) : price;
     const volume = (existing?.volume ?? 0) + quantity * price;
     const tradeCount = (existing?.tradeCount ?? 0) + 1;
-    const change = price - prevPrice;
-    const changePercent = prevPrice !== 0 ? (change / prevPrice) * 100 : 0;
 
     prices.set(trade.s, {
       symbol: trade.s,
       price,
       prevPrice,
-      change,
-      changePercent,
       high,
       low,
       volume,
       tradeCount,
       quantity,
-      timestamp: trade.T,
       isBuyerMaker: trade.m,
       tradeId: trade.t,
     });
