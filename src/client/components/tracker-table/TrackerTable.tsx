@@ -4,8 +4,8 @@ import { Table, type ColumnDef } from "../../ui/table";
 import type { PriceMap } from "../../hooks/useLivePrices";
 
 const TREND_COLORS: Record<Trend, string | undefined> = {
-  up: "#22c55e",
-  down: "#ef4444",
+  up: "#00c853",
+  down: "#ff4564",
   unchanged: undefined,
 };
 
@@ -37,12 +37,12 @@ const columns: ColumnDef<PriceWithTrend>[] = [
     dataIndex: "symbol",
     align: "left",
     render: (_v, record): ReactNode => (
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 600 }}>
+      <span className="inline-flex items-center gap-2 font-semibold">
         {record.icon && (
           <img
             src={record.icon}
             alt={record.symbol}
-            style={{ width: 22, height: 22, borderRadius: "50%" }}
+            className="w-[22px] h-[22px] rounded-full"
           />
         )}
         {record.name}
@@ -89,7 +89,7 @@ const columns: ColumnDef<PriceWithTrend>[] = [
     title: "Side",
     dataIndex: "isBuyerMaker",
     render: (v) => ((v as boolean) ? "Sell" : "Buy"),
-    cellStyle: (v) => ({ color: (v as boolean) ? "#ef4444" : "#22c55e" }),
+    cellStyle: (v) => ({ color: (v as boolean) ? "#ff4564" : "#00c853" }),
   },
 ];
 
@@ -115,7 +115,10 @@ export function TrackerTable({ priceMap }: TrackerTableProps) {
         emptyText="Waiting for data..."
       />
       {hasMore && (
-        <button className="show-toggle" onClick={() => setExpanded((prev) => !prev)}>
+        <button
+          className="block mt-6 mb-10 py-3.5 px-8 bg-surface border-2 border-accent text-accent rounded-xl text-sm font-semibold cursor-pointer hover:bg-accent hover:text-white transition-colors"
+          onClick={() => setExpanded((prev) => !prev)}
+        >
           {expanded ? "Show Less" : "Show More"}
         </button>
       )}

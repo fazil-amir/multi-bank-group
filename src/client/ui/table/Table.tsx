@@ -3,16 +3,21 @@ import { TableRow } from "./TableRow";
 
 export function Table<T>({ columns, data, rowKey, emptyText }: TableProps<T>) {
   if (data.length === 0) {
-    return <p className="loading">{emptyText ?? "No data"}</p>;
+    return <p className="text-muted py-5 text-sm">{emptyText ?? "No data"}</p>;
   }
 
   return (
-    <div className="table-wrapper">
-      <table>
-        <thead>
+    <div className="overflow-x-auto rounded-xl border border-border shadow-sm">
+      <table className="w-full border-collapse text-sm whitespace-nowrap">
+        <thead className="bg-surface sticky top-0">
           <tr>
             {columns.map((col) => (
-              <th key={col.key} style={{ textAlign: col.align ?? "right" }}>
+              <th
+                key={col.key}
+                className={`py-4 px-5 font-semibold text-muted border-b border-border select-none ${
+                  col.align === "left" ? "text-left" : "text-right"
+                }`}
+              >
                 {col.title}
               </th>
             ))}

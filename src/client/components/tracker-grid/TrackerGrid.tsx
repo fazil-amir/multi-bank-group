@@ -14,7 +14,7 @@ export function TrackerGrid({ trackers, priceMap }: TrackerGridProps) {
   const [expanded, setExpanded] = useState(false);
 
   if (trackers.length === 0) {
-    return <p className="loading">Loading trackers...</p>;
+    return <p className="text-muted py-5 text-sm">Loading trackers...</p>;
   }
 
   const visible = expanded ? trackers : trackers.slice(0, INITIAL_COUNT);
@@ -22,13 +22,16 @@ export function TrackerGrid({ trackers, priceMap }: TrackerGridProps) {
 
   return (
     <div>
-      <div className="tracker-grid">
+      <div className="grid grid-cols-4 gap-5 mb-8">
         {visible.map((t) => (
           <TrackerCard key={t.id} tracker={t} price={priceMap[t.id.toUpperCase()]} />
         ))}
       </div>
       {hasMore && (
-        <button className="show-toggle" onClick={() => setExpanded((prev) => !prev)}>
+        <button
+          className="block mt-6 mb-10 py-3.5 px-8 bg-surface border-2 border-accent text-accent rounded-xl text-sm font-semibold cursor-pointer hover:bg-accent hover:text-white transition-colors"
+          onClick={() => setExpanded((prev) => !prev)}
+        >
           {expanded ? "Show Less" : "Show More"}
         </button>
       )}

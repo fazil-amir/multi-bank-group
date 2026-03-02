@@ -11,19 +11,23 @@ export default function App() {
   const error = trackersError ?? streamError;
 
   return (
-    <main>
-      <h1>{APP_NAME}</h1>
-      {error && <p className="error">{error}</p>}
+    <main className="max-w-[1400px] mx-auto px-10 py-10">
+      <h1 className="text-2xl font-bold mb-8 text-white">{APP_NAME}</h1>
+      {error && (
+        <p className="text-negative py-4 px-4 bg-surface border border-negative rounded-lg text-sm">
+          {error}
+        </p>
+      )}
       {loading ? (
-        <p className="loading">Loading...</p>
+        <p className="text-muted py-8 text-sm">Loading...</p>
       ) : (
-        <section className="tracker-grid-section">
-          <h2 className="section-heading">Trackers</h2>
+        <section className="mb-12 pb-12 border-b border-border">
+          <h2 className="text-lg font-semibold text-accent mb-5">Trackers</h2>
           <TrackerGrid trackers={trackers} priceMap={priceMap} />
         </section>
       )}
-      <section className="tracker-table-section">
-        <h2 className="section-heading">Price Table</h2>
+      <section className="pt-4">
+        <h2 className="text-lg font-semibold text-accent mb-5">Price Table</h2>
         <TrackerTable priceMap={priceMap} />
       </section>
     </main>

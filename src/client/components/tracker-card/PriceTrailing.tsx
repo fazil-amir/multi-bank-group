@@ -7,10 +7,10 @@ function formatPrice(n: number): string {
 export function PriceTrailing({ price }: { price?: PriceWithTrend }) {
   return (
     <>
-      <span style={{ color: "#22c55e", fontSize: "0.9rem", fontWeight: 600 }}>
+      <span className="text-positive text-sm font-semibold">
         {price ? formatPrice(price.high) : "—"}
       </span>
-      <span style={{ color: "#ef4444", fontSize: "0.9rem", fontWeight: 600 }}>
+      <span className="text-negative text-sm font-semibold">
         {price ? formatPrice(price.low) : "—"}
       </span>
     </>
