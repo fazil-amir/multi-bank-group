@@ -1,14 +1,16 @@
 import { Link, useParams } from "react-router-dom";
+import type { PriceMap, TrackerInfo } from "@shared/types/market.types";
 import { TrackerCard } from "../../components/tracker-card";
-import { useLivePrices } from "../../hooks/useLivePrices";
-import { useTrackers } from "../../hooks/useTrackers";
 
-export function TrackerDetailPage() {
+export interface TrackerDetailPageProps {
+  trackers: TrackerInfo[];
+  priceMap: PriceMap;
+  loading: boolean;
+  error: string | null;
+}
+
+export function TrackerDetailPage({ trackers, priceMap, loading, error }: TrackerDetailPageProps) {
   const { id } = useParams<{ id: string }>();
-  const { trackers, loading, error: trackersError } = useTrackers();
-  const { priceMap, error: pricesError } = useLivePrices();
-
-  const error = trackersError ?? pricesError;
   const tracker = id ? trackers.find((t) => t.id.toLowerCase() === id.toLowerCase()) : undefined;
   const price = tracker ? priceMap[tracker.id.toUpperCase()] : undefined;
 

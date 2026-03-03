@@ -1,13 +1,15 @@
+import type { PriceMap, TrackerInfo } from "@shared/types/market.types";
 import { TrackerGrid } from "../../components/tracker-grid";
 import { TrackerTable } from "../../components/tracker-table";
-import { useLivePrices } from "../../hooks/useLivePrices";
-import { useTrackers } from "../../hooks/useTrackers";
 
-export function TrackersPage() {
-  const { trackers, loading, error: trackersError } = useTrackers();
-  const { priceMap, error: pricesError } = useLivePrices();
+export interface TrackersPageProps {
+  trackers: TrackerInfo[];
+  priceMap: PriceMap;
+  loading: boolean;
+  error: string | null;
+}
 
-  const error = trackersError ?? pricesError;
+export function TrackersPage({ trackers, priceMap, loading, error }: TrackersPageProps) {
 
   return (
     <>
