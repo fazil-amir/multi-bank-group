@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { TrackerInfo } from "@shared/types/market.types";
 import { TrackerCard, TrackerCardShimmer } from "../components/tracker-card";
@@ -51,6 +51,16 @@ export function TrackerDetailPage() {
     () => filterTrackersBySearch(trackers, search),
     [trackers, search],
   );
+
+  const selectedCardRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    const el = selectedCardRef.current;
+    if (el) {
+      el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [id, filteredTrackers]);
 
   if (loading) {
     return (
@@ -142,14 +152,15 @@ export function TrackerDetailPage() {
             filteredTrackers.map((t) => {
             const isActive = id?.toLowerCase() === t.id.toLowerCase();
             return (
-              <TrackerCard
-                key={t.id}
-                tracker={t}
-                price={priceMap[t.id.toUpperCase()]}
-                priceLoading={Object.keys(priceMap).length === 0}
-                onClick={() => navigate(`/trackers/${t.id}`)}
-                className={isActive ? "ring-2 ring-accent" : ""}
-              />
+              <div key={t.id} ref={isActive ? selectedCardRef : undefined}>
+                <TrackerCard
+                  tracker={t}
+                  price={priceMap[t.id.toUpperCase()]}
+                  priceLoading={Object.keys(priceMap).length === 0}
+                  onClick={() => navigate(`/trackers/${t.id}`)}
+                  className={isActive ? "ring-2 ring-accent" : ""}
+                />
+              </div>
             );
           })
           )}

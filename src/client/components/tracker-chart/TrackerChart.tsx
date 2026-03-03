@@ -106,11 +106,17 @@ export function TrackerChart({
   }
 
   return (
-    <div className={`relative h-full min-h-0 w-full min-h-[50vh] md:min-h-0 ${className}`}>
+    <div className={`relative flex flex-col h-full min-h-0 w-full min-h-[50vh] md:min-h-0 ${className}`}>
       <div
         ref={containerRef}
-        className="h-full w-full min-h-[50vh] md:min-h-0"
+        className="h-full w-full min-h-[50vh] md:min-h-0 flex-1"
       />
+      <p
+        className="p-2 border-t border-border text-sm font-bold shrink-0"
+        aria-hidden
+      >
+        Chart shows 1 year of daily data.
+      </p>
       {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-canvas/80">
           <div className="loader-spinner" aria-hidden />
