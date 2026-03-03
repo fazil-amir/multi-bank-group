@@ -3,7 +3,7 @@ import cors from "cors";
 import { API_PORT } from "@shared/constants/app.constants";
 import { ENDPOINTS } from "@shared/constants/api.constants";
 import trackersRoutes from "./routes/trackers.routes";
-import { connectTracker } from "./services/tracker.service";
+import { connectTracker } from "./services/trackers.service";
 
 const app = express();
 

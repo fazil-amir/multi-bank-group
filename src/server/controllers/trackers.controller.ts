@@ -1,7 +1,11 @@
 import type { Request, Response } from "express";
 import { TRACKERS } from "@shared/constants/trackerSymbols.constants";
 import { SSE_INTERVAL_MS } from "@shared/constants/tracker.constants";
-import { getLivePrices } from "../services/tracker.service";
+import {
+  getTrackerHistory,
+  isKnownSymbol,
+} from "../services/history.service";
+import { getLivePrices } from "../services/trackers.service";
 
 export function getTrackersSymbols(_req: Request, res: Response): void {
   res.json(TRACKERS);
@@ -24,4 +28,22 @@ export function getTrackersStreams(req: Request, res: Response): void {
   req.on("close", () => {
     clearInterval(interval);
   });
+}
+
+export async function getTrackerHistoryHandler(
+  req: Request<{ symbol: string }>,
+  res: Response,
+): Promise<void> {
+  const { symbol } = req.params;
+  if (!symbol || !isKnownSymbol(symbol)) {
+    res.status(404).json({ error: "Tracker not found" });
+    return;
+  }
+  try {
+    const data = await getTrackerHistory(symbol);
+    res.json(data);
+  } catch (err) {
+    console.error("Tracker history fetch error:", err);
+    res.status(502).json({ error: "Failed to fetch price history" });
+  }
 }

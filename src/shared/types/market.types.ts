@@ -50,3 +50,12 @@ export interface PriceWithTrend extends LivePrice {
 }
 
 export type PriceMap = Record<string, PriceWithTrend>;
+
+export interface PriceHistoryPoint {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
