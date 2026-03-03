@@ -2,8 +2,8 @@ import { Link, Route, Routes } from "react-router-dom";
 import { APP_NAME } from "@shared/constants/app.constants";
 import { useLivePrices } from "../hooks/useLivePrices";
 import { useTrackers } from "../hooks/useTrackers";
-import { TrackersPage } from "./pages/TrackersPage";
-import { TrackerDetailPage } from "./pages/TrackerDetailPage";
+import { TrackersPage } from "../pages/TrackersPage";
+import { TrackerDetailPage } from "../pages/TrackerDetailPage";
 
 export default function App() {
   const { trackers, loading, error: trackersError } = useTrackers();

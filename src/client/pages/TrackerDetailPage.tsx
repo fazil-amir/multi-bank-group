@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import type { PriceMap, TrackerInfo } from "@shared/types/market.types";
-import { TrackerCard } from "../../components/tracker-card";
+import { TrackerCard } from "../components/tracker-card";
 
 export interface TrackerDetailPageProps {
   trackers: TrackerInfo[];

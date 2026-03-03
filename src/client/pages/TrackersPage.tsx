@@ -1,6 +1,6 @@
 import type { PriceMap, TrackerInfo } from "@shared/types/market.types";
-import { TrackerGrid } from "../../components/tracker-grid";
-import { TrackerTable } from "../../components/tracker-table";
+import { TrackerGrid } from "../components/tracker-grid";
+import { TrackerTable } from "../components/tracker-table";
 
 export interface TrackersPageProps {
   trackers: TrackerInfo[];
