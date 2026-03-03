@@ -10,7 +10,7 @@ export default function App() {
   const { priceMap, error: pricesError } = useLivePrices();
 
   return (
-    <main className="max-w-[1400px] mx-auto px-10 py-10">
+    <main className="max-w-[1600px] mx-auto px-6 py-10 sm:px-10">
       <h1 className="text-2xl font-bold mb-8 text-white">
         <Link to="/" className="hover:opacity-90">
           {APP_NAME}

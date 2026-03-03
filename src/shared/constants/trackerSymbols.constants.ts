@@ -65,14 +65,6 @@ export const TRACKERS: TrackerInfo[] = [
     icon: icon("doge"),
   },
   {
-    id: "maticusdt",
-    symbol: "MATIC",
-    name: "Polygon",
-    description: "Polygon Spot / USDT",
-    pair: "MATIC/USDT",
-    icon: icon("matic"),
-  },
-  {
     id: "dotusdt",
     symbol: "DOT",
     name: "Polkadot",

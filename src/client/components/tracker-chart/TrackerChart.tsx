@@ -101,8 +101,9 @@ export function TrackerChart({
     <div className={`relative h-full min-h-0 w-full ${className}`}>
       <div ref={containerRef} className="h-full min-h-0 w-full" />
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-canvas/70 text-muted text-sm">
-          Loading chart…
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-canvas/80">
+          <div className="loader-spinner" aria-hidden />
+          <span className="text-muted text-sm">Loading chart…</span>
         </div>
       )}
       {!loading && history.length === 0 && (

@@ -1,7 +1,10 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { PriceMap, TrackerInfo } from "@shared/types/market.types";
+import { TrackerCard, TrackerCardShimmer } from "../components/tracker-card";
 import { TrackerChart } from "../components/tracker-chart";
 import { useHistory } from "../hooks/useHistory";
+
+const LEFT_LOADER_CARD_COUNT = 6;
 
 function TrackerChartWithHistory({ symbol }: { symbol: string }) {
   const { history, loading, error } = useHistory(symbol);
@@ -38,9 +41,27 @@ export function TrackerDetailPage({
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh]">
-        <aside className="w-[320px] shrink-0 border-r border-border bg-surface/50" />
-        <div className="flex-1 p-6 text-muted text-sm">Loading...</div>
+      <div className="flex min-h-[60vh] max-h-[calc(100vh-8rem)] rounded-xl border border-border overflow-hidden bg-surface/30">
+        <aside className="w-[420px] shrink-0 flex flex-col min-h-0 border-r border-border bg-surface">
+          <div className="p-4 border-b border-border shrink-0">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1 text-muted hover:text-accent text-sm font-medium mb-3"
+            >
+              ← Back
+            </Link>
+            <h2 className="text-base font-semibold text-white">Symbols</h2>
+            <div className="mt-3 h-10 rounded-lg bg-canvas border border-border shimmer" />
+          </div>
+          <nav className="scrollbar-theme flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-3">
+            {Array.from({ length: LEFT_LOADER_CARD_COUNT }).map((_, i) => (
+              <TrackerCardShimmer key={i} />
+            ))}
+          </nav>
+        </aside>
+        <div className="flex-1 flex items-center justify-center p-6 text-muted text-sm">
+          Loading…
+        </div>
       </div>
     );
   }
@@ -56,7 +77,7 @@ export function TrackerDetailPage({
   return (
     <div className="flex min-h-[60vh] max-h-[calc(100vh-8rem)] rounded-xl border border-border overflow-hidden bg-surface/30">
       {/* Left: Symbols list */}
-      <aside className="w-[360px] shrink-0 flex flex-col min-h-0 border-r border-border bg-surface">
+      <aside className="w-[420px] shrink-0 flex flex-col min-h-0 border-r border-border bg-surface">
         <div className="p-4 border-b border-border shrink-0">
           <Link
             to="/"
@@ -72,56 +93,18 @@ export function TrackerDetailPage({
             aria-label="Search symbols"
           />
         </div>
-        <nav className="scrollbar-theme flex-1 min-h-0 overflow-y-auto">
+        <nav className="scrollbar-theme flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-3">
           {trackers.map((t) => {
-            const price = priceMap[t.id.toUpperCase()];
             const isActive = id?.toLowerCase() === t.id.toLowerCase();
             return (
-              <button
+              <TrackerCard
                 key={t.id}
-                type="button"
+                tracker={t}
+                price={priceMap[t.id.toUpperCase()]}
+                priceLoading={Object.keys(priceMap).length === 0}
                 onClick={() => navigate(`/trackers/${t.id}`)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors border-l-2 ${
-                  isActive
-                    ? "bg-surface-hover border-accent text-white"
-                    : "border-transparent hover:bg-surface-hover/70 text-muted hover:text-white"
-                }`}
-              >
-                {t.icon && (
-                  <img
-                    src={t.icon}
-                    alt=""
-                    className="w-8 h-8 rounded-full shrink-0 object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                    }}
-                  />
-                )}
-                <div className="min-w-0 flex-1">
-                  <div className="font-medium text-sm truncate">{t.symbol}</div>
-                  <div className="text-xs truncate text-muted">{t.name}</div>
-                </div>
-                {price != null && (
-                  <div className="shrink-0 text-right tabular-nums">
-                    <div className="text-sm font-medium text-white">
-                      {price.price.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 6,
-                      })}
-                    </div>
-                    <div
-                      className={`text-xs ${
-                        (price.changePercent ?? 0) >= 0
-                          ? "text-positive"
-                          : "text-negative"
-                      }`}
-                    >
-                      {(price.changePercent ?? 0) >= 0 ? "+" : ""}
-                      {(price.changePercent ?? 0).toFixed(2)}%
-                    </div>
-                  </div>
-                )}
-              </button>
+                className={isActive ? "ring-2 ring-accent" : ""}
+              />
             );
           })}
         </nav>
