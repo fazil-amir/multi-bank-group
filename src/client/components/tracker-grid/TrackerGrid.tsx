@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { PriceMap, TrackerInfo } from "@shared/types/market.types";
 import { TrackerCard, TrackerCardShimmer } from "../tracker-card";
 
@@ -10,6 +11,7 @@ interface TrackerGridProps {
 }
 
 export function TrackerGrid({ trackers, priceMap }: TrackerGridProps) {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const pricesLoading = Object.keys(priceMap).length === 0;
 
@@ -26,7 +28,12 @@ export function TrackerGrid({ trackers, priceMap }: TrackerGridProps) {
         {pricesLoading
           ? visible.map((t) => <TrackerCardShimmer key={t.id} />)
           : visible.map((t) => (
-              <TrackerCard key={t.id} tracker={t} price={priceMap[t.id.toUpperCase()]} />
+              <TrackerCard
+                key={t.id}
+                tracker={t}
+                price={priceMap[t.id.toUpperCase()]}
+                onClick={() => navigate(`/trackers/${t.id}`)}
+              />
             ))}
       </div>
       {hasMore && !pricesLoading && (

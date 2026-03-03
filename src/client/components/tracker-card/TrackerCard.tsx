@@ -11,7 +11,7 @@ export interface TrackerCardProps {
 export function TrackerCard({ tracker, price, className, onClick }: TrackerCardProps) {
   return (
     <div
-      className={`bg-surface border border-border rounded-xl py-5 px-5 transition-colors hover:bg-surface-hover hover:border-border shadow-sm ${className ?? ""}`}
+      className={`bg-surface border border-border rounded-xl py-5 px-5 transition-colors hover:bg-surface-hover hover:border-border shadow-sm ${onClick ? "cursor-pointer" : ""} ${className ?? ""}`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
     >
