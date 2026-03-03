@@ -39,3 +39,26 @@
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: inherit;
 }
+
+/* Themed scrollbar (track + thumb) */
+.scrollbar-theme {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-surface);
+}
+
+.scrollbar-theme::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-theme::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+.scrollbar-theme::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.scrollbar-theme::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-hover);
+}
