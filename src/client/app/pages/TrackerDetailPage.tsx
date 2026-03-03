@@ -30,7 +30,7 @@ export function TrackerDetailPage({ trackers, priceMap, loading, error }: Tracke
     return (
       <div>
         <Link
-          to="/trackers"
+          to="/"
           className="inline-block text-accent hover:underline mb-4 text-sm font-medium"
         >
           ← Back to Trackers
@@ -43,7 +43,7 @@ export function TrackerDetailPage({ trackers, priceMap, loading, error }: Tracke
   return (
     <div>
       <Link
-        to="/trackers"
+        to="/"
         className="inline-block text-accent hover:underline mb-6 text-sm font-medium"
       >
         ← Back to Trackers

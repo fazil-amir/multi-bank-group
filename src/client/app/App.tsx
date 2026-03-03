@@ -12,24 +12,13 @@ export default function App() {
   return (
     <main className="max-w-[1400px] mx-auto px-10 py-10">
       <h1 className="text-2xl font-bold mb-8 text-white">
-        <Link to="/trackers" className="hover:opacity-90">
+        <Link to="/" className="hover:opacity-90">
           {APP_NAME}
         </Link>
       </h1>
       <Routes>
         <Route
           path="/"
-          element={
-            <TrackersPage
-              trackers={trackers}
-              priceMap={priceMap}
-              loading={loading}
-              error={trackersError ?? pricesError}
-            />
-          }
-        />
-        <Route
-          path="/trackers"
           element={
             <TrackersPage
               trackers={trackers}
