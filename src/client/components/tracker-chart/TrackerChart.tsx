@@ -44,9 +44,10 @@ export function TrackerChart({
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    const chart = createChart(containerRef.current, {
+    const chart = createChart(container, {
       layout: CHART_LAYOUT,
       grid: {
         vertLines: { color: "#2d3349" },
@@ -74,7 +75,14 @@ export function TrackerChart({
     chartRef.current = chart;
     seriesRef.current = candlestickSeries;
 
+    // Resize after layout so chart gets correct size on mobile first paint (container can be 0 initially)
+    const resize = () => chart.resize(container.offsetWidth, container.offsetHeight);
+    const resizeId = requestAnimationFrame(resize);
+    const timeoutId = window.setTimeout(resize, 150);
+
     return () => {
+      cancelAnimationFrame(resizeId);
+      window.clearTimeout(timeoutId);
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
@@ -98,8 +106,11 @@ export function TrackerChart({
   }
 
   return (
-    <div className={`relative h-full min-h-0 w-full ${className}`}>
-      <div ref={containerRef} className="h-full min-h-0 w-full" />
+    <div className={`relative h-full min-h-0 w-full min-h-[50vh] md:min-h-0 ${className}`}>
+      <div
+        ref={containerRef}
+        className="h-full w-full min-h-[50vh] md:min-h-0"
+      />
       {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-canvas/80">
           <div className="loader-spinner" aria-hidden />

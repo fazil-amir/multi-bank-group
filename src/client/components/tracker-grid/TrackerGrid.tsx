@@ -24,7 +24,7 @@ export function TrackerGrid({ trackers, priceMap }: TrackerGridProps) {
 
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4 sm:gap-5 sm:mb-8">
         {pricesLoading
           ? visible.map((t) => <TrackerCardShimmer key={t.id} />)
           : visible.map((t) => (
@@ -39,7 +39,7 @@ export function TrackerGrid({ trackers, priceMap }: TrackerGridProps) {
       </div>
       {hasMore && !pricesLoading && (
         <button
-          className="block mt-6 mb-10 py-3.5 px-8 bg-surface border-2 border-accent text-accent rounded-xl text-sm font-semibold cursor-pointer hover:bg-accent hover:text-white transition-colors text-left"
+          className="block mt-4 mb-6 py-2.5 px-5 sm:mt-6 sm:mb-10 sm:py-3.5 sm:px-8 bg-surface border-2 border-accent text-accent rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold cursor-pointer hover:bg-accent hover:text-white transition-colors text-left"
           onClick={() => setExpanded((prev) => !prev)}
         >
           {expanded ? "Show Less" : "Show More"}

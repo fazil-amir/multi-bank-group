@@ -6,8 +6,8 @@ import { TrackerDetailPage } from "../pages/TrackerDetailPage";
 
 export default function App() {
   return (
-    <main className="max-w-[1600px] mx-auto px-6 py-10 sm:px-10">
-      <h1 className="text-2xl font-bold mb-8 text-white">
+    <main className="max-w-[1600px] mx-auto px-4 py-5 sm:px-6 sm:py-10 md:px-10">
+      <h1 className="text-xl font-bold mb-4 text-white sm:text-2xl sm:mb-8">
         <Link to="/" className="hover:opacity-90">
           {APP_NAME}
         </Link>

@@ -8,20 +8,24 @@ export function TrackersPage() {
   return (
     <>
       {error && (
-        <p className="text-negative py-4 px-4 bg-surface border border-negative rounded-lg text-sm mb-6">
+        <p className="text-negative py-3 px-3 sm:py-4 sm:px-4 bg-surface border border-negative rounded-lg text-xs sm:text-sm mb-4 sm:mb-6">
           {error}
         </p>
       )}
       {loading ? (
-        <p className="text-muted py-8 text-sm">Loading...</p>
+        <p className="text-muted py-4 sm:py-8 text-sm">Loading...</p>
       ) : (
         <>
-          <section className="mb-12 pb-12 border-b border-border">
-            <h2 className="text-lg font-semibold text-accent mb-5">Trackers</h2>
+          <section className="mb-6 pb-6 border-b border-border sm:mb-12 sm:pb-12">
+            <h2 className="text-base font-semibold text-accent mb-3 sm:text-lg sm:mb-5">
+              Trackers
+            </h2>
             <TrackerGrid trackers={trackers} priceMap={priceMap} />
           </section>
-          <section className="pt-4">
-            <h2 className="text-lg font-semibold text-accent mb-5">Price Table</h2>
+          <section className="pt-2 sm:pt-4">
+            <h2 className="text-base font-semibold text-accent mb-3 sm:text-lg sm:mb-5">
+              Price Table
+            </h2>
             <TrackerTable priceMap={priceMap} />
           </section>
         </>

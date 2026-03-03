@@ -11,17 +11,17 @@ export function PriceTrailing({ price }: { price?: PriceWithTrend }) {
   if (!price) {
     return (
       <div className="flex flex-col items-end gap-0.5">
-        <span className="text-muted text-sm">—</span>
-        <span className="text-muted text-sm">—</span>
+        <span className="text-muted text-xs sm:text-sm">—</span>
+        <span className="text-muted text-xs sm:text-sm">—</span>
       </div>
     );
   }
   return (
     <div className="flex flex-col items-end gap-0.5 tabular-nums">
-      <span className="text-negative text-sm font-semibold">
+      <span className="text-negative text-xs font-semibold sm:text-sm">
         {formatPrice(price.low)}
       </span>
-      <span className="text-positive text-sm font-semibold">
+      <span className="text-positive text-xs font-semibold sm:text-sm">
         {formatPrice(price.high)}
       </span>
     </div>

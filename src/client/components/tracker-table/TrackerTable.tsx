@@ -1,4 +1,5 @@
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import type { LivePrice, PriceWithTrend, Trend } from "@shared/types/market.types";
 import { Table, type ColumnDef } from "../../ui/table";
 import type { PriceMap } from "@shared/types/market.types";
@@ -38,12 +39,12 @@ const columns: ColumnDef<PriceWithTrend>[] = [
     dataIndex: "symbol",
     align: "left",
     render: (_v, record): ReactNode => (
-      <span className="inline-flex items-center gap-2 font-semibold">
+      <span className="inline-flex items-center gap-1.5 font-semibold sm:gap-2">
         {record.icon && (
           <img
             src={record.icon}
             alt={record.symbol}
-            className="w-[22px] h-[22px] rounded-full"
+            className="w-5 h-5 rounded-full sm:w-[22px] sm:h-[22px]"
           />
         )}
         {record.name}
@@ -101,12 +102,17 @@ interface TrackerTableProps {
 }
 
 export function TrackerTable({ priceMap }: TrackerTableProps) {
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
   const data = useMemo(() => Object.values(priceMap), [priceMap]);
 
   const visible = expanded ? data : data.slice(0, INITIAL_COUNT);
   const hasMore = data.length > INITIAL_COUNT;
   const pricesLoading = data.length === 0;
+
+  const handleRowClick = (record: PriceWithTrend) => {
+    navigate(`/trackers/${record.symbol.toLowerCase()}`);
+  };
 
   return (
     <div>
@@ -118,11 +124,12 @@ export function TrackerTable({ priceMap }: TrackerTableProps) {
           data={visible}
           rowKey="symbol"
           emptyText="Waiting for data..."
+          onRowClick={handleRowClick}
         />
       )}
       {hasMore && !pricesLoading && (
         <button
-          className="block mt-6 mb-10 py-3.5 px-8 bg-surface border-2 border-accent text-accent rounded-xl text-sm font-semibold cursor-pointer hover:bg-accent hover:text-white transition-colors"
+          className="block mt-4 mb-6 py-2.5 px-5 sm:mt-6 sm:mb-10 sm:py-3.5 sm:px-8 bg-surface border-2 border-accent text-accent rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold cursor-pointer hover:bg-accent hover:text-white transition-colors text-left"
           onClick={() => setExpanded((prev) => !prev)}
         >
           {expanded ? "Show Less" : "Show More"}

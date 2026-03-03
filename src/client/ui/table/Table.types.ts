@@ -14,4 +14,5 @@ export interface TableProps<T> {
   data: T[];
   rowKey: keyof T;
   emptyText?: string;
+  onRowClick?: (record: T) => void;
 }
