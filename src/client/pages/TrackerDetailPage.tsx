@@ -1,8 +1,9 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import type { PriceMap, TrackerInfo } from "@shared/types/market.types";
 import { TrackerCard, TrackerCardShimmer } from "../components/tracker-card";
 import { TrackerChart } from "../components/tracker-chart";
 import { useHistory } from "../hooks/useHistory";
+import { useLivePrices } from "../hooks/useLivePrices";
+import { useTrackers } from "../hooks/useTrackers";
 
 const LEFT_LOADER_CARD_COUNT = 6;
 
@@ -20,19 +21,10 @@ function TrackerChartWithHistory({ symbol }: { symbol: string }) {
   );
 }
 
-export interface TrackerDetailPageProps {
-  trackers: TrackerInfo[];
-  priceMap: PriceMap;
-  loading: boolean;
-  error: string | null;
-}
-
-export function TrackerDetailPage({
-  trackers,
-  priceMap,
-  loading,
-  error,
-}: TrackerDetailPageProps) {
+export function TrackerDetailPage() {
+  const { trackers, loading, error: trackersError } = useTrackers();
+  const { priceMap, error: pricesError } = useLivePrices();
+  const error = trackersError ?? pricesError;
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const tracker = id

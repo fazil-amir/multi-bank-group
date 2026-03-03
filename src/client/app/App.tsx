@@ -1,14 +1,9 @@
 import { Link, Route, Routes } from "react-router-dom";
 import { APP_NAME } from "@shared/constants/app.constants";
-import { useLivePrices } from "../hooks/useLivePrices";
-import { useTrackers } from "../hooks/useTrackers";
 import { TrackersPage } from "../pages/TrackersPage";
 import { TrackerDetailPage } from "../pages/TrackerDetailPage";
 
 export default function App() {
-  const { trackers, loading, error: trackersError } = useTrackers();
-  const { priceMap, error: pricesError } = useLivePrices();
-
   return (
     <main className="max-w-[1600px] mx-auto px-6 py-10 sm:px-10">
       <h1 className="text-2xl font-bold mb-8 text-white">
@@ -17,28 +12,8 @@ export default function App() {
         </Link>
       </h1>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <TrackersPage
-              trackers={trackers}
-              priceMap={priceMap}
-              loading={loading}
-              error={trackersError ?? pricesError}
-            />
-          }
-        />
-        <Route
-          path="/trackers/:id"
-          element={
-            <TrackerDetailPage
-              trackers={trackers}
-              priceMap={priceMap}
-              loading={loading}
-              error={trackersError ?? pricesError}
-            />
-          }
-        />
+        <Route path="/" element={<TrackersPage />} />
+        <Route path="/trackers/:id" element={<TrackerDetailPage />} />
       </Routes>
     </main>
   );
