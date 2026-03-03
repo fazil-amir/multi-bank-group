@@ -1,5 +1,6 @@
 import { Link, Route, Routes } from "react-router-dom";
 import { APP_NAME } from "@shared/constants/app.constants";
+import { TrackerDataProvider } from "../contexts/TrackerDataContext";
 import { TrackersPage } from "../pages/TrackersPage";
 import { TrackerDetailPage } from "../pages/TrackerDetailPage";
 
@@ -11,10 +12,12 @@ export default function App() {
           {APP_NAME}
         </Link>
       </h1>
-      <Routes>
-        <Route path="/" element={<TrackersPage />} />
-        <Route path="/trackers/:id" element={<TrackerDetailPage />} />
-      </Routes>
+      <TrackerDataProvider>
+        <Routes>
+          <Route path="/" element={<TrackersPage />} />
+          <Route path="/trackers/:id" element={<TrackerDetailPage />} />
+        </Routes>
+      </TrackerDataProvider>
     </main>
   );
 }

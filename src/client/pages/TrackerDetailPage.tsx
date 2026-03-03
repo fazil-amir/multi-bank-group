@@ -1,9 +1,8 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { TrackerCard, TrackerCardShimmer } from "../components/tracker-card";
 import { TrackerChart } from "../components/tracker-chart";
+import { useTrackerData } from "../contexts/TrackerDataContext";
 import { useHistory } from "../hooks/useHistory";
-import { useLivePrices } from "../hooks/useLivePrices";
-import { useTrackers } from "../hooks/useTrackers";
 
 const LEFT_LOADER_CARD_COUNT = 6;
 
@@ -22,9 +21,7 @@ function TrackerChartWithHistory({ symbol }: { symbol: string }) {
 }
 
 export function TrackerDetailPage() {
-  const { trackers, loading, error: trackersError } = useTrackers();
-  const { priceMap, error: pricesError } = useLivePrices();
-  const error = trackersError ?? pricesError;
+  const { trackers, priceMap, loading, error } = useTrackerData();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const tracker = id
