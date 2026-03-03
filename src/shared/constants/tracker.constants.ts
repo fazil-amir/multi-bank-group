@@ -13,3 +13,7 @@ export const HISTORY_INTERVAL = "1d";
 export const HISTORY_LIMIT = 366;
 /** Cache TTL: 24h so each day we serve fresh 1y history. */
 export const HISTORY_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+/** Browser Cache API name for tracker history (client). */
+export const HISTORY_CACHE_NAME = "tracker-history";
+/** Response header used to store cache timestamp for TTL checks. */
+export const CACHED_AT_HEADER = "X-Cached-At";

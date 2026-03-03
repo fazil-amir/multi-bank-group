@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@shared/constants/app.constants";
 import { ENDPOINTS } from "@shared/constants/api.constants";
+import {
+  CACHED_AT_HEADER,
+  HISTORY_CACHE_NAME,
+  HISTORY_CACHE_TTL_MS,
+} from "@shared/constants/tracker.constants";
 import type { PriceHistoryPoint } from "@shared/types/market.types";
-
-const CACHE_NAME = "tracker-history";
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const CACHED_AT_HEADER = "X-Cached-At";
 
 async function getCachedHistory(
   cache: Cache,
@@ -16,7 +17,7 @@ async function getCachedHistory(
   const cachedAt = cached.headers.get(CACHED_AT_HEADER);
   if (cachedAt) {
     const age = Date.now() - parseInt(cachedAt, 10);
-    if (age > CACHE_TTL_MS) {
+    if (age > HISTORY_CACHE_TTL_MS) {
       await cache.delete(request);
       return null;
     }
@@ -75,7 +76,7 @@ export function useHistory(symbol: string | undefined): {
           setHistory(data);
           return;
         }
-        const cache = await caches.open(CACHE_NAME);
+        const cache = await caches.open(HISTORY_CACHE_NAME);
         const cached = await getCachedHistory(cache, request);
         if (cached) {
           setHistory(cached);
