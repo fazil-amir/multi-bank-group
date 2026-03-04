@@ -45,7 +45,7 @@ Production-ready full-stack crypto price dashboard: live spot prices and histori
 
 ```bash
 git clone <repo-url>
-cd multibank-crypto-dashboard
+cd multi-bank-crypto-dashboard
 npm install
 npm run dev
 ```
@@ -244,7 +244,7 @@ All authenticated routes require the auth cookie (same site or CORS with `creden
 ## Project structure
 
 ```
-multibank-crypto-dashboard/
+multi-bank-crypto-dashboard/
 ├── index.html
 ├── package.json
 ├── vite.config.ts

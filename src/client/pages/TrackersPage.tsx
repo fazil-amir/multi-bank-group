@@ -16,7 +16,7 @@ export function TrackersPage() {
         <p className="text-muted py-4 sm:py-8 text-sm">Loading...</p>
       ) : (
         <>
-          <section className="mb-6 pb-6 border-b border-border sm:mb-12 sm:pb-12">
+          <section className="border-b border-border mb-6 pb-2">
             <h2 className="text-base font-semibold text-accent mb-3 sm:text-lg sm:mb-5">
               Trackers
             </h2>
