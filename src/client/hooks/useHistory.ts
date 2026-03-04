@@ -30,7 +30,7 @@ async function fetchAndCacheHistory(
   cache: Cache,
   request: Request,
 ): Promise<PriceHistoryPoint[]> {
-  const res = await fetch(url);
+  const res = await fetch(url, { credentials: "include" });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = (await res.json()) as PriceHistoryPoint[];
   const headers = new Headers(res.headers);
@@ -70,7 +70,7 @@ export function useHistory(symbol: string | undefined): {
     const run = async () => {
       try {
         if (!("caches" in window)) {
-          const res = await fetch(url);
+          const res = await fetch(url, { credentials: "include" });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = (await res.json()) as PriceHistoryPoint[];
           setHistory(data);
