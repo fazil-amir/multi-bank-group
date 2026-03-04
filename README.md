@@ -16,6 +16,8 @@ Production-ready full-stack crypto price dashboard: live spot prices and histori
 | **Live**  | [**https://crypto-dashboard.fazilamir.me/**](https://crypto-dashboard.fazilamir.me/) |
 | **Image** | `fazilamir/multi-bank-crypto-dashboard:latest` |
 
+> **Production hosting:** The live app runs on a **self-hosted machine at home** ([Zima OS](https://zimaspace.com/)). It is exposed to the internet via **[Cloudflare Tunnel](https://www.cloudflare.com/products/tunnel/)**, so no port forwarding or public IP is required.
+
 ---
 
 ## Table of contents
@@ -31,6 +33,8 @@ Production-ready full-stack crypto price dashboard: live spot prices and histori
 - [Project structure](#project-structure)
 - [Caching](#caching)
 - [Security](#security)
+- [Current assumptions](#current-assumptions)
+- [Future enhancements](#future-enhancements)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
@@ -290,6 +294,41 @@ multibank-crypto-dashboard/
 - **Production:** Set `JWT_SECRET` via environment (see [auth.constants.ts](src/shared/constants/auth.constants.ts)); do not rely on the default in repo.
 - **HTTPS:** Use `SECURE_COOKIE=true` (default when `NODE_ENV=production` and `SECURE_COOKIE` not set) so the cookie is only sent over HTTPS. For HTTP (e.g. home server behind VPN), set `SECURE_COOKIE=false`.
 - **CORS:** Configured with `credentials: true`; restrict `origin` in production if needed.
+
+---
+
+## Current assumptions
+
+- **User credentials are static** — No sign-up or user management. Demo users (e.g. `alice@example.com`, `bob@example.com`) are defined in code ([auth.constants.ts](src/shared/constants/auth.constants.ts)); no database.
+- **Single process, in-memory only** — No Redis or database. Live price map and history cache live in process memory; restart clears them.
+- **Binance WebSocket is always on** — The server opens the Binance trade stream at startup and keeps it open; data is pushed regardless of whether any client is connected.
+- **One SSE interval per client** — Each connected client gets its own 2s interval for SSE; at scale this would be replaced by a single shared broadcaster.
+- **JWT secret in code (demo)** — Production should use `JWT_SECRET` from environment; default in repo is for development only.
+- **No rate limiting** — API endpoints are not rate-limited.
+- **No persistent user preferences** — Theme (dark only today), alerts, or watchlists are not stored per user.
+
+---
+
+## Future enhancements
+
+Planned or possible improvements:
+
+| Area | Enhancement |
+|------|-------------|
+| **Auth & users** | **Sign-up module** — User registration with email verification; move from static users to a real user store. |
+| **Storage** | **Mongoose (MongoDB)** — Persist users, sessions, and optionally user preferences (watchlists, alerts). |
+| **API protection** | **Rate limiting** — Per-IP or per-user limits on login and API endpoints (e.g. express-rate-limit) to reduce abuse. |
+| **Alerts** | **Price alerts per user** — Let users set target prices; notify (in-app, email, or webhook) when price is reached; store in DB. |
+| **UI** | **Light mode** — Theme toggle (light/dark/system) with persisted preference. |
+| **Caching** | **Redis for history** — Replace in-memory history cache with Redis so multiple instances share cache and survive restarts. |
+| **Real-time / WebSocket** | **Smarter Binance connection** — See [WebSocket connection improvements](#websocket-connection-improvements) below. |
+
+### WebSocket connection improvements
+
+- **On-demand or time-window streaming** — Today the server connects to Binance at boot and keeps the stream open 24/7. A possible improvement: connect only when at least one client needs live data, or fetch data for a **defined period** (e.g. market hours / session) instead of indefinitely.
+- **Reconnect with backoff** — Robust reconnection logic (exponential backoff, max retries) when the Binance WebSocket drops.
+- **Single shared broadcaster** — One timer that pushes the same snapshot to all SSE clients instead of one interval per client.
+- **Optional separate worker** — Run the Binance WebSocket in a separate process or worker and communicate via Redis/shared store so the API can scale independently.
 
 ---
 
