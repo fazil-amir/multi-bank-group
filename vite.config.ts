@@ -11,4 +11,8 @@ export default defineConfig({
       "@shared": resolve(import.meta.dirname, "src/shared"),
     },
   },
-})
+  test: {
+    environment: "node",
+    include: ["src/server/**/*.test.ts", "src/shared/**/*.test.ts"],
+  },
+});
