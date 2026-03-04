@@ -1,4 +1,5 @@
 import path from "node:path";
+import fs from "node:fs";
 import cookieParser from "cookie-parser";
 import express from "express";
 import cors from "cors";
@@ -10,7 +11,6 @@ import { requireAuth } from "./middleware/auth.middleware";
 import { connectTracker } from "./services/trackers.service";
 
 const app = express();
-const isProduction = process.env.NODE_ENV === "production";
 
 app.use(
   cors({
@@ -24,9 +24,9 @@ app.use(cookieParser());
 app.use(ENDPOINTS.AUTH, authRoutes);
 app.use(ENDPOINTS.TRACKERS, requireAuth, trackersRoutes);
 
-// Serve built UI and SPA fallback in production
-if (isProduction) {
-  const distPath = path.join(process.cwd(), "dist");
+// Serve built UI and SPA fallback when dist exists (production or after npm run build)
+const distPath = path.join(process.cwd(), "dist");
+if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
   app.get("*", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));

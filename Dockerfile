@@ -11,9 +11,9 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
-ENV NODE_ENV=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/tsconfig.json ./
+ENV NODE_ENV=production
 EXPOSE 4000
 CMD ["npm", "start"]

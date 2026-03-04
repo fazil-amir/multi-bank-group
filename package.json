@@ -17,7 +17,9 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "format": "prettier --write src",
-    "format:check": "prettier --check src"
+    "format:check": "prettier --check src",
+    "docker:build": "docker build -t multi-bank-crypto-dashboard:latest .",
+    "docker:run": "docker rm -f multi-bank-crypto-dashboard 2>/dev/null || true && docker run -d --name multi-bank-crypto-dashboard -p 4000:4000 -e NODE_ENV=production --restart unless-stopped multi-bank-crypto-dashboard:latest"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
