@@ -24,8 +24,7 @@ app.use(cookieParser());
 app.use(ENDPOINTS.AUTH, authRoutes);
 app.use(ENDPOINTS.TRACKERS, requireAuth, trackersRoutes);
 
-// Serve built UI and SPA fallback in production (e.g. Render.com).
-// On Render: Build Command = "npm install --include=dev && npm run build", Start Command = "npm start".
+// Serve built UI and SPA fallback in production
 if (isProduction) {
   const distPath = path.join(process.cwd(), "dist");
   app.use(express.static(distPath));
