@@ -1,5 +1,8 @@
 # Multi Bank Crypto Dashboard
 
+
+https://github.com/user-attachments/assets/dd6a0eba-64c1-4ccf-bf78-35df3dc895e5
+
 [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-multi--platform-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
