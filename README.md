@@ -1,22 +1,77 @@
-# MultiBank Crypto Dashboard
+# Multi Bank Crypto Dashboard
 
-A full-stack crypto price dashboard that shows live spot prices and historical charts for multiple USDT pairs, with cookie-based auth and real-time updates via Server-Sent Events (SSE).
+[![Node.js](https://img.shields.io/badge/Node.js-20+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/Docker-multi--platform-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 
-**Live app:** [https://crypto-dashboard.fazilamir.me/](https://crypto-dashboard.fazilamir.me/)
+Production-ready full-stack crypto price dashboard: live spot prices and historical charts for 14 USDT pairs, cookie-based auth, and real-time updates via Server-Sent Events.
+
+| **Resource** | **Value**  |
+|---|---|
+| **Live**  | [**https://crypto-dashboard.fazilamir.me/**](https://crypto-dashboard.fazilamir.me/) |
+| **Image** | `fazilamir/multi-bank-crypto-dashboard:latest` |
 
 ---
 
-## What This App Does
+## Table of contents
 
-- **Live prices** for 14 crypto/USDT pairs (BTC, ETH, SOL, BNB, ADA, XRP, DOGE, DOT, LTC, AVAX, LINK, ATOM, TRX, UNI, XLM) from Binance.
-- **Real-time updates** via a single WebSocket to Binance on the server, then SSE to the browser every 2 seconds.
-- **Historical charts** (1-day candles, up to ~1 year) from Binance klines, with server- and client-side caching.
-- **Auth** via email/password (demo users), JWT in HTTP-only cookie, and protected routes.
-- **Responsive UI** with a tracker grid, price table, and per-tracker detail page with chart and dropdown.
+- [Quick start](#quick-start)
+- [Features](#features)
+- [Tech stack](#tech-stack)
+- [Architecture](#architecture)
+- [Getting started](#getting-started)
+- [Configuration](#configuration)
+- [Deployment](#deployment)
+- [API reference](#api-reference)
+- [Project structure](#project-structure)
+- [Caching](#caching)
+- [Security](#security)
+- [Development](#development)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ---
 
-## Tools & Stack
+## Quick start
+
+```bash
+git clone <repo-url>
+cd multibank-crypto-dashboard
+npm install
+npm run dev
+```
+
+- **App:** [http://localhost:5173](http://localhost:5173)  
+- **API:** [http://localhost:4000](http://localhost:4000)  
+
+**Demo login:** `alice@example.com` / `password1`
+
+**Docker (one command):**
+
+```bash
+docker run -d -p 4000:4000 -e NODE_ENV=production -e SECURE_COOKIE=false \
+  --restart unless-stopped \
+  fazilamir/multi-bank-crypto-dashboard:latest
+```
+
+Then open [http://localhost:4000](http://localhost:4000).
+
+---
+
+## Features
+
+- **Live prices** — 14 crypto/USDT pairs (BTC, ETH, SOL, BNB, ADA, XRP, DOGE, DOT, LTC, AVAX, LINK, ATOM, TRX, UNI, XLM) from Binance
+- **Real-time updates** — Single server-side WebSocket to Binance; SSE to clients every 2s
+- **Historical charts** — 1D candles, ~1 year of data; Binance klines with server and client caching
+- **Auth** — Email/password, JWT in HTTP-only cookie, protected routes
+- **Responsive UI** — Tracker grid, sortable price table, per-symbol detail page with TradingView-style chart
+- **Multi-platform Docker** — Single image for `linux/amd64` and `linux/arm64` (Zima OS, Raspberry Pi, cloud)
+
+---
+
+## Tech stack
 
 | Layer | Technology |
 |-------|------------|
@@ -25,60 +80,84 @@ A full-stack crypto price dashboard that shows live spot prices and historical c
 | **Backend** | Node 20+, Express, TypeScript (tsx) |
 | **Auth** | JWT (jsonwebtoken), bcrypt, HTTP-only cookies |
 | **Data** | Binance WebSocket (trades), Binance REST (klines) |
-| **Real-time to client** | Server-Sent Events (SSE) |
-| **Testing** | Vitest |
-| **Lint / format** | ESLint 9, Prettier |
-| **Deploy** | Docker (multi-stage), Docker Hub; runs on Zima OS / any host |
+| **Real-time** | Server-Sent Events (SSE) |
+| **Test** | Vitest |
+| **Quality** | ESLint 9, Prettier |
+| **Deploy** | Docker (multi-stage), Docker Hub |
 
 ---
 
-## How to Run
+## Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                         Browser (SPA)                            │
+│  React + Vite bundle  │  AuthContext  │  TrackerDataContext      │
+│  SSE client (2s)      │  Cookie auth  │  Cache API (history)     │
+└──────────────────────────────┬───────────────────────────────────┘
+                               │ HTTP/SSE (same origin or CORS)
+┌──────────────────────────────▼───────────────────────────────────┐
+│                    Express (single process)                      │
+│  /api/auth/*  │  /api/trackers/symbols  │  /api/trackers/streams │
+│  /api/trackers/:symbol  │  static dist/  │  SPA fallback         │
+│  requireAuth middleware on trackers                              │
+└──────────────────────────────┬───────────────────────────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        │                      │                      │
+        ▼                      ▼                      ▼
+┌───────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Binance WS    │    │ In-memory price │    │ In-memory       │
+│ (trades)      │───▶│ Map (live)      │    │ history cache   │
+│ stream.binance│    │                 │    │ (24h TTL)       │
+└───────────────┘    └────────┬────────┘    └────────┬────────┘
+                              │                      │
+                              │ SSE every 2s         │ Binance REST
+                              │                      │ (klines)
+                              ▼                      ▼
+                    ┌─────────────────────────────────────────┐
+                    │               Binance API               │
+                    │  api.binance.com (klines, 1d, 366)      │
+                    └─────────────────────────────────────────┘
+```
+
+- **Bootstrap:** Server starts → `connectTracker()` opens Binance WebSocket → price map populated → Express serves API + static. Client loads → `AuthProvider` calls `/api/auth/me` → then either login or protected app with `TrackerDataProvider` (trackers + SSE).
+
+---
+
+## Getting started
 
 ### Prerequisites
 
-- **Node.js** ≥ 20
-- **npm** (or compatible package manager)
+- **Node.js** ≥ 20  
+- **npm** (or pnpm/yarn)
 
 ### Local development
 
 ```bash
-# Install dependencies
 npm install
-
-# Run API server + Vite dev server (concurrent)
 npm run dev
 ```
 
-- **Client:** [http://localhost:5173](http://localhost:5173) (Vite HMR)
+- **Client (HMR):** [http://localhost:5173](http://localhost:5173)  
 - **API:** [http://localhost:4000](http://localhost:4000)
 
-Demo logins (see [auth constants](src/shared/constants/auth.constants.ts)):  
-`alice@example.com` / `password1`, `bob@example.com` / `password2`, `carol@example.com` / `password3`.
-
-### Production build (local)
+### Production build (run locally)
 
 ```bash
-npm run build    # Vite build → dist/
-npm start        # Express serves dist/ and API on port 4000
+npm run build
+npm start
 ```
 
-Open [http://localhost:4000](http://localhost:4000).
+Serves app + API at [http://localhost:4000](http://localhost:4000).
 
-### Docker (local)
+### Docker
 
-```bash
-npm run docker:build   # Build image
-npm run docker:run     # Run container (port 4000)
-```
-
-### Docker (push to Docker Hub, multi-platform)
-
-```bash
-docker login
-npm run docker:push    # Builds linux/amd64 + linux/arm64 and pushes to Docker Hub
-```
-
-Image: `fazilamir/multi-bank-crypto-dashboard:latest`.
+| Goal | Command |
+|------|--------|
+| Build image | `npm run docker:build` |
+| Run container | `npm run docker:run` |
+| Build + push (multi-platform) | `npm run docker:push` |
 
 ### Docker Compose
 
@@ -86,145 +165,168 @@ Image: `fazilamir/multi-bank-crypto-dashboard:latest`.
 docker compose up -d
 ```
 
-Uses `fazilamir/multi-bank-crypto-dashboard:latest` and sets `NODE_ENV=production` and `SECURE_COOKIE=false` for HTTP (e.g. home server). Open [http://localhost:4000](http://localhost:4000) (or your host’s IP).
+Uses image `fazilamir/multi-bank-crypto-dashboard:latest`, port `4000`, `NODE_ENV=production`, `SECURE_COOKIE=false`.
 
-### Other scripts
+---
 
-| Script | Description |
-|--------|-------------|
-| `npm run test` | Run Vitest once |
-| `npm run test:watch` | Vitest watch |
-| `npm run lint` | ESLint |
-| `npm run lint:fix` | ESLint with auto-fix |
-| `npm run format` | Prettier write |
-| `npm run format:check` | Prettier check |
+## Configuration
+
+Environment variables (see [.env.example](.env.example)):
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | `4000` | Server listen port |
+| `NODE_ENV` | — | `production` for prod build; affects cookie and behavior |
+| `SECURE_COOKIE` | (see below) | Set to `false` when using **HTTP** (e.g. home server) so auth cookie is sent. Omit or `true` for HTTPS. |
+| `VITE_API_BASE_URL` | (same-origin in prod) | Override API base URL for the client (e.g. dev proxy). |
+
+**Production (HTTPS):** Use default cookie behavior (secure).  
+**Production (HTTP, e.g. home server):** Set `SECURE_COOKIE=false` in the container/compose.
+
+---
+
+## Deployment
+
+### Docker (recommended)
+
+1. **Pull and run:**
+   ```bash
+   docker pull fazilamir/multi-bank-crypto-dashboard:latest
+   docker run -d --name multi-bank-crypto-dashboard \
+     -p 4000:4000 \
+     -e NODE_ENV=production \
+     -e SECURE_COOKIE=false \
+     --restart unless-stopped \
+     fazilamir/multi-bank-crypto-dashboard:latest
+   ```
+2. **Or use Compose:** `docker compose up -d` (see [docker-compose.yml](docker-compose.yml)).
+
+### Build and push new image
+
+```bash
+docker login
+npm run docker:push
+```
+
+Builds for `linux/amd64` and `linux/arm64` and pushes to Docker Hub. Redeploy by pulling the updated image and recreating the container.
+
+### Reverse proxy (HTTPS)
+
+Put the app behind nginx, Caddy, or Traefik with HTTPS and optional basic auth. Then either:
+
+- Omit `SECURE_COOKIE` or set `SECURE_COOKIE=true`, or  
+- Keep `SECURE_COOKIE=false` if the proxy terminates SSL and talks to the app over HTTP (cookie is still sent to the browser over HTTPS).
+
+---
+
+## API reference
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/api/auth/login` | No | Body: `{ email, password }`. Sets HTTP-only cookie, returns `{ user }`. |
+| `POST` | `/api/auth/logout` | Cookie | Clears auth cookie. |
+| `GET` | `/api/auth/me` | Cookie | Returns `{ user: { email } }` or 401. |
+| `GET` | `/api/trackers/symbols` | Cookie | Returns list of tracker configs (id, name, symbol, icon, etc.). |
+| `GET` | `/api/trackers/streams` | Cookie | SSE stream; JSON array of live prices every 2s. |
+| `GET` | `/api/trackers/:symbol` | Cookie | Historical OHLC for symbol (1D, ~1y). Cached 24h server-side. |
+
+All authenticated routes require the auth cookie (same site or CORS with `credentials: true`).
+
+---
+
+## Project structure
+
+```
+multibank-crypto-dashboard/
+├── index.html
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+├── Dockerfile                 # Multi-stage: build frontend, run Express
+├── docker-compose.yml
+├── .env.example
+├── src/
+│   ├── client/                # Frontend
+│   │   ├── main.tsx           # React root
+│   │   ├── app/App.tsx        # Routes: /login, protected /*
+│   │   ├── contexts/          # AuthContext, TrackerDataContext
+│   │   ├── pages/             # LoginPage, TrackersPage, TrackerDetailPage
+│   │   ├── components/        # ProtectedRoute, tracker-*, ui/table
+│   │   ├── hooks/             # useLivePrices (SSE), useHistory, useTrackers
+│   │   └── ui/
+│   ├── server/                # Express API
+│   │   ├── index.ts           # App setup, static, connectTracker()
+│   │   ├── routes/            # auth, trackers
+│   │   ├── controllers/       # auth, trackers (SSE, history)
+│   │   ├── middleware/        # requireAuth
+│   │   └── services/          # auth, trackers (WS), history (klines + cache)
+│   └── shared/                # Shared by client + server
+│       ├── constants/         # app, api, auth, tracker, trackerSymbols
+│       ├── types/             # market.types
+│       └── utils/             # trackerData.utils
+├── scripts/                   # build-package.sh, install-on-zima.sh, etc.
+└── docs/                      # zima-os-gui-install.md, etc.
+```
 
 ---
 
 ## Caching
 
-- **Server – live prices:** In-memory `Map` updated by a single Binance WebSocket; no TTL (always latest trade).
-- **Server – history:** In-memory cache per symbol; TTL **24 hours** (`HISTORY_CACHE_TTL_MS`). After TTL, next request refetches from Binance klines.
-- **Client – history:** Browser [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) (`tracker-history`). Responses cached with `X-Cached-At`; client checks age and invalidates after **24 hours** so daily data stays fresh.
+| Layer | What | TTL / behavior |
+|-------|------|----------------|
+| **Server – live prices** | In-memory `Map` from Binance WebSocket | No TTL; always latest trade. |
+| **Server – history** | In-memory cache per symbol | 24h (`HISTORY_CACHE_TTL_MS`). |
+| **Client – history** | Browser Cache API (`tracker-history`) | 24h; `X-Cached-At` header used for age. |
 
 ---
 
-## How the App Bootstraps
+## Security
 
-1. **Build (Docker):** Multi-stage Dockerfile: stage 1 runs `npm ci` and `npm run build` (Vite) to produce `dist/`; stage 2 runs Express with `dist/` and `src/` (server + shared), and `tsx src/server/index.ts` as `npm start`.
-2. **Server startup:** Express loads, mounts CORS, JSON, cookie-parser, auth routes, tracker routes (with `requireAuth`), then static `dist/` and SPA fallback. It starts a single **Binance WebSocket** (`connectTracker()`) to fill the in-memory price map before any client connects.
-3. **Client load:** Browser gets `index.html` from Express, loads the Vite bundle. React tree: `StrictMode` → `BrowserRouter` → `AuthProvider` → `App`. `AuthProvider` calls `/api/auth/me` (with credentials) to restore session; then routing shows either `LoginPage` or protected layout with `TrackerDataProvider` and pages.
-
----
-
-## Project Structure
-
-```
-multibank-crypto-dashboard/
-├── index.html                 # Entry HTML; script points to /src/client/main.tsx
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-├── Dockerfile                # Multi-stage: build frontend, run Express + tsx
-├── docker-compose.yml        # Pulls image, port 4000, SECURE_COOKIE=false
-├── .env.example
-├── src/
-│   ├── client/               # Frontend (Vite)
-│   │   ├── main.tsx          # React root: StrictMode, BrowserRouter, AuthProvider, App
-│   │   ├── styles.css        # Tailwind entry
-│   │   ├── app/
-│   │   │   ├── App.tsx       # Routes: /login, protected /* (header + TrackerDataProvider + sub-routes)
-│   │   │   └── index.tsx
-│   │   ├── contexts/
-│   │   │   ├── AuthContext.tsx    # user, login, logout, checkAuth via /api/auth/*
-│   │   │   └── TrackerDataContext.tsx  # trackers + priceMap from useTrackers + useLivePrices
-│   │   ├── pages/
-│   │   │   ├── LoginPage.tsx
-│   │   │   ├── TrackersPage.tsx   # Grid + table of trackers/prices
-│   │   │   └── TrackerDetailPage.tsx  # Chart + dropdown + card for selected symbol
-│   │   ├── components/
-│   │   │   ├── ProtectedRoute.tsx
-│   │   │   ├── tracker-card/      # TrackerCard, TrackerCardShimmer, ChangeBadge, PriceTrailing
-│   │   │   ├── tracker-chart/     # TrackerChart (Lightweight Charts)
-│   │   │   ├── tracker-table/     # TrackerTable, TableShimmer
-│   │   │   ├── tracker-grid/      # TrackerGrid
-│   │   │   └── tracker-dropdown/   # TrackerDropdown, TrackerOption
-│   │   ├── hooks/
-│   │   │   ├── useLivePrices.ts   # SSE to /api/trackers/streams, 2s flush, trend computation
-│   │   │   ├── useHistory.ts      # Fetch + Cache API for /api/trackers/:symbol
-│   │   │   └── useTrackers.ts     # GET /api/trackers/symbols
-│   │   └── ui/
-│   │       └── table/             # Table, TableRow, types
-│   ├── server/               # Express API
-│   │   ├── index.ts          # App setup, CORS, auth + tracker routes, static + SPA, connectTracker(), listen
-│   │   ├── routes/
-│   │   │   ├── auth.routes.ts
-│   │   │   └── trackers.routes.ts
-│   │   ├── controllers/
-│   │   │   ├── auth.controller.ts   # login, logout, me; cookie options (SECURE_COOKIE for HTTP)
-│   │   │   └── trackers.controller.ts  # symbols, SSE stream, history
-│   │   ├── middleware/
-│   │   │   └── auth.middleware.ts   # requireAuth: cookie JWT → 401 or next()
-│   │   └── services/
-│   │       ├── auth.service.ts      # JWT sign/verify, bcrypt, static users
-│   │       ├── trackers.service.ts  # Binance WebSocket, in-memory price map
-│   │       └── history.service.ts   # Binance klines, in-memory cache 24h
-│   └── shared/               # Used by both client and server
-│       ├── constants/
-│       │   ├── app.constants.ts
-│       │   ├── api.constants.ts     # ENDPOINTS
-│       │   ├── auth.constants.ts    # JWT, cookie name, static users, demo hint
-│       │   ├── tracker.constants.ts # WS URL, SSE interval, klines base, cache TTL, Cache API name
-│       │   └── trackerSymbols.constants.ts  # TRACKERS (id, symbol, name, icon, etc.)
-│       ├── types/
-│       │   └── market.types.ts      # LivePrice, PriceMap, PriceHistoryPoint, TrackerInfo, etc.
-│       └── utils/
-│           └── trackerData.utils.ts # buildKlinesUrl, parseKlinesToHistory, tradeToLivePrice
-├── scripts/                  # Optional: build-package.sh, install-on-zima.sh, push-to-registry.sh
-└── docs/                     # e.g. zima-os-gui-install.md
-```
+- **Auth:** JWT in HTTP-only cookie; `SameSite=Lax`. No token in localStorage.
+- **Passwords:** bcrypt (cost 10). Demo users are static; replace with a proper user store and strong secret for production.
+- **Production:** Set `JWT_SECRET` via environment (see [auth.constants.ts](src/shared/constants/auth.constants.ts)); do not rely on the default in repo.
+- **HTTPS:** Use `SECURE_COOKIE=true` (default when `NODE_ENV=production` and `SECURE_COOKIE` not set) so the cookie is only sent over HTTPS. For HTTP (e.g. home server behind VPN), set `SECURE_COOKIE=false`.
+- **CORS:** Configured with `credentials: true`; restrict `origin` in production if needed.
 
 ---
 
-## Philosophy
+## Development
 
-- **Single process, in-memory:** One Node process holds the Binance WebSocket and the price map; SSE fans out to clients. No Redis or DB required for the demo.
-- **Shared types and constants:** `src/shared` keeps client and server in sync (API paths, tracker list, cache keys, types).
-- **Cookie-based auth:** JWT in HTTP-only cookie; `SECURE_COOKIE` can be turned off for HTTP (e.g. home server) so login works without HTTPS.
-- **Cache where it helps:** Server caches history 24h to avoid hammering Binance; client caches history in the Cache API with the same TTL for repeat visits and symbol switches.
-- **Portable image:** Docker image is multi-platform (amd64/arm64) so the same tag runs on x86 home servers (e.g. Zima OS) and ARM devices.
+### Scripts
 
----
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | API + Vite dev server (concurrent) |
+| `npm run build` | Vite production build → `dist/` |
+| `npm start` | Run Express (serve `dist/` + API) |
+| `npm run test` | Vitest once |
+| `npm run test:watch` | Vitest watch |
+| `npm run lint` | ESLint |
+| `npm run lint:fix` | ESLint with fix |
+| `npm run format` | Prettier write |
+| `npm run format:check` | Prettier check |
+| `npm run docker:build` | Build Docker image |
+| `npm run docker:run` | Run container (removes existing same name) |
+| `npm run docker:push` | Multi-platform build + push to Docker Hub |
 
-## Pages & Main Components
+### Data flow (summary)
 
-| Page / Area | Purpose |
-|-------------|---------|
-| **Login** (`/login`) | Email/password form; redirects to `/` or `from` after success; shows demo hint. |
-| **Trackers** (`/`) | Header (app name, user email, Sign out). Tracker grid (cards with live price, change, icon). Price table (all symbols, sortable). |
-| **Tracker detail** (`/trackers/:id`) | Dropdown to switch symbol; large chart (Lightweight Charts); card for current symbol; history from `useHistory(symbol)` with client cache. |
-
-**Components:** `ProtectedRoute` (redirects to `/login` if not authenticated), `TrackerCard` / `TrackerCardShimmer`, `TrackerChart`, `TrackerTable` / `TableShimmer`, `TrackerGrid`, `TrackerDropdown` / `TrackerOption`, `ChangeBadge`, `PriceTrailing`, shared `Table` / `TableRow`.
-
----
-
-## Data Flow
-
-1. **Auth:** User submits login → POST `/api/auth/login` → server validates, sets HTTP-only cookie, returns user → client stores user in `AuthContext`. Later requests send cookie; `requireAuth` verifies JWT and attaches `req.user`.
-2. **Tracker list:** Client mounts `TrackerDataProvider` → `useTrackers()` GET `/api/trackers/symbols` → list of trackers (id, name, symbol, icon, etc.).
-3. **Live prices:** Server maintains one Binance WebSocket; trades update an in-memory `Map`. SSE handler runs every `SSE_INTERVAL_MS` (2s), sends `getLivePrices()` as JSON. Client `useLivePrices()` subscribes to SSE, buffers updates, flushes every 2s and computes trends (up/down/unchanged) for each field.
-4. **History:** Client `useHistory(symbol)` requests GET `/api/trackers/:symbol`. Server `getTrackerHistory(symbol)` uses in-memory cache (24h TTL) or fetches Binance klines, then returns points. Client caches response in Cache API with 24h TTL and reuses until expired.
+1. **Auth:** Login → POST `/api/auth/login` → cookie set → `AuthContext` holds user. `requireAuth` reads cookie and verifies JWT.
+2. **Trackers:** `useTrackers()` → GET `/api/trackers/symbols` → list of symbols/config.
+3. **Live prices:** Server: Binance WS → in-memory map. SSE handler sends snapshot every 2s. Client: `useLivePrices()` subscribes to SSE, buffers, flushes every 2s, computes trends.
+4. **History:** GET `/api/trackers/:symbol` → server cache or Binance klines → client caches in Cache API (24h).
 
 ---
 
-## Environment
+## Troubleshooting
 
-See [.env.example](.env.example). Notable:
-
-- `PORT` – server port (default 4000).
-- `NODE_ENV=production` – enables production behavior (e.g. cookie secure when `SECURE_COOKIE` is not disabled).
-- `SECURE_COOKIE=false` – allow auth cookie over HTTP (e.g. Docker on home server).
-- `VITE_API_BASE_URL` – optional; in production build the client uses same-origin if not set.
+| Issue | Fix |
+|-------|-----|
+| **401 Unauthorized** on APIs after login | Using HTTP? Set `SECURE_COOKIE=false` so the auth cookie is sent. Rebuild/redeploy so the server uses it. |
+| **No matching manifest for linux/amd64** | Image was built on arm64 only. Use `npm run docker:push` to build and push multi-platform image. |
+| **Push access denied** to Docker Hub | Run `docker login`. Tag image as `yourusername/repo:tag` (e.g. `fazilamir/multi-bank-crypto-dashboard:latest`) before push. |
+| **Blank page at localhost:4000** | Ensure `dist/` exists (`npm run build`) and server serves it; or run in Docker so the image includes the built frontend. |
+| **SSE / prices not updating** | Check server logs; ensure Binance WebSocket is connected and `/api/trackers/streams` is reachable with auth cookie. |
 
 ---
 
