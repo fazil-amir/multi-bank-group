@@ -1,3 +1,4 @@
+import path from "node:path";
 import cookieParser from "cookie-parser";
 import express from "express";
 import cors from "cors";
@@ -9,6 +10,7 @@ import { requireAuth } from "./middleware/auth.middleware";
 import { connectTracker } from "./services/trackers.service";
 
 const app = express();
+const isProduction = process.env.NODE_ENV === "production";
 
 app.use(
   cors({
@@ -22,11 +24,22 @@ app.use(cookieParser());
 app.use(ENDPOINTS.AUTH, authRoutes);
 app.use(ENDPOINTS.TRACKERS, requireAuth, trackersRoutes);
 
+// Serve built UI and SPA fallback in production (e.g. Render.com).
+// On Render: Build Command = "npm install && npm run build", Start Command = "npm start".
+if (isProduction) {
+  const distPath = path.join(process.cwd(), "dist");
+  app.use(express.static(distPath));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
+
 // Start a single persistent WebSocket to Binance at boot,
 // so the in-memory price map is already populated before any client connects.
 connectTracker();
 
-app.listen(API_PORT, () => {
+const port = Number(process.env.PORT) || API_PORT;
+app.listen(port, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server running at http://localhost:${API_PORT}`);
+  console.log(`Server running on port ${port}`);
 });
