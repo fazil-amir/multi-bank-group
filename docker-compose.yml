@@ -1,0 +1,11 @@
+services:
+  app:
+    image: fazilamir/multi-bank-crypto-dashboard:latest
+    container_name: multi-bank-crypto-dashboard
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      # Set SECURE_COOKIE=false when using HTTP (e.g. home server without HTTPS)
+      - SECURE_COOKIE=false
+    restart: unless-stopped
