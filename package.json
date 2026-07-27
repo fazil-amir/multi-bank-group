@@ -18,25 +18,19 @@
     "lint:fix": "eslint src --fix",
     "format": "prettier --write src",
     "format:check": "prettier --check src",
-    "docker:build": "docker build -t crypto-dashboard:latest .",
-    "docker:run": "docker rm -f crypto-dashboard 2>/dev/null || true && docker run -d --name crypto-dashboard -p 4000:4000 -e NODE_ENV=production --restart unless-stopped crypto-dashboard:latest",
+    "docker:build": "docker build -t fazilamir/crypto-dashboard:latest .",
+    "docker:run": "docker rm -f fazilamir/crypto-dashboard 2>/dev/null || true && docker run -d --name crypto-dashboard -p 4000:4000 -e NODE_ENV=production --restart unless-stopped crypto-dashboard:latest",
     "docker:push": "docker buildx build --platform linux/amd64,linux/arm64 -t fazilamir/crypto-dashboard:latest --push ."
   },
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2",
     "lightweight-charts": "^5.1.0",
     "react-router-dom": "^7.13.1",
     "ws": "^8.19.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.3",
-    "@types/bcrypt": "^5.0.2",
-    "@types/cookie-parser": "^1.4.8",
-    "@types/jsonwebtoken": "^9.0.7",
     "@tailwindcss/vite": "^4.2.1",
     "vitest": "^3.2.4",
     "@types/cors": "^2.8.17",
